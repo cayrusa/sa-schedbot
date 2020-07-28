@@ -30,7 +30,7 @@ async def ping():
         if output != ["Nothing to push!"]:
             sched_chan = bot.get_channel(conf.SCHEDULING_CHAN)
             for line in output:
-                await ched_chan.send(line)
+                await sched_chan.send(line)
         await asyncio.sleep(3600)
         it += 1
         print("Cycle # " + str(it))
