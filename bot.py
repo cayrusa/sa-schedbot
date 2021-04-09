@@ -66,8 +66,7 @@ def is_admin(user):
     else:
         return conf.ADMIN_ROLE in user.roles
 
-
-bot = commands.Bot(command_prefix="!")
+bot = commands.Bot(command_prefix="!",chunk_guilds_at_startup=True, intents=discord.Intents.all())
 
 
 @bot.event
@@ -116,14 +115,13 @@ async def lfg(ctx):
 async def rmlfg(ctx):
     userID = ctx.message.author.id
     serv = bot.get_guild(conf.SERVER)
-    try:
-        member = discord.utils.get(serv.members, id=userID)
-    except:
+    member = serv.get_member(userID)
+    if member is None:
         await ctx.send("You are not a member of the TI:SA discord server")
         return
     role = serv.get_role(conf.LFG_ROLE)
     await member.remove_roles(role)
-    print("remove lfg for " + ctx.message.author.name)
+    print(f"remove lfg for {ctx.message.author.name}")
 
 
 @bot.command()
@@ -133,7 +131,7 @@ async def shutdown(ctx):
         await ctx.send("Access denied")
     else:
         print(f"Shutdown by {ctx.message.author.name}")
-        await bot.logout()
+        await bot.close()
 
 
 @bot.command()
@@ -311,12 +309,13 @@ async def match(ctx, player1="gm", player2=""):
     print("Querry continuations by {}".format(ctx.message.author.name))
     if player1 == "lfg":
         lfg = ["PlayerID"]
-        for member in ctx.message.guild.members:
-            re_member = member
-            for role in member.roles:
-                if role.name == "Looking for a Game":
-                    if re_member.status != Status.offline:
-                        lfg.append(re_member.id)
+        if ctx.message.guild is not None: #TODO: if ask from private message does not work.
+            for member in ctx.message.guild.members:
+                re_member = member
+                for role in member.roles:
+                    if role.name == "Looking for a Game":
+                        if re_member.status != Status.offline:
+                            lfg.append(re_member.id)
         del lfg[0]
         if len(lfg) > 0:
             player1 += ","
@@ -362,4 +361,4 @@ async def statistics(ctx, player="ID"):
 
 
 if __name__ == "__main__":
-    bot.run(secrets.TOKEN, reconnect=False)
+    bot.run(secrets.TOKEN)
