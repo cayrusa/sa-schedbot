@@ -14,13 +14,15 @@ global connected
 connected = False
 global lockout
 lockout = False
+global do_ping
+do_ping = False
 
 
 async def ping():
     log_chan = bot.get_channel(conf.LOG_CHAN)
     await log_chan.send("Regular scheduling updates activated")
     it = 0
-    while True:
+    while do_ping:
         async with aiohttp.ClientSession() as session:
             async with session.get(
                 "https://script.google.com/macros/s/AKfycbw8rBUEf_E-zkVzXCC8YM2_awJshEiVRPE3nu53FLIFleNrzOAB/exec"
@@ -95,6 +97,24 @@ async def on_member_remove(member):
     channel = bot.get_channel(conf.JOINS_LEAVES_CHAN)
     await channel.send(message)
 
+
+@bot.command()
+async def toggle_ping(ctx):
+    if is_admin(ctx.message.author):
+        print(f"Toggle ping by {ctx.message.author.name}")
+        log_chan = bot.get_channel(conf.LOG_CHAN)
+        await log_chan.send("Regular scheduling updates activated")
+        global do_ping
+        if do_ping:
+            do_ping = False
+            await log_chan.send("Disable pings")
+        else:
+            do_ping = True
+            await log_chan.send("Enable pings")
+            await ping()
+    else:
+        print(f"Toogle ping denied for {ctx.message.author.name}:{ctx.message.author.id}")
+        await ctx.send("Access denied")
 
 @bot.command()
 async def lfg(ctx):
