@@ -59,12 +59,10 @@ def parse(input):
 
 
 def is_admin(user):
-    serv = bot.get_guild(conf.SERVER)
-    user = serv.get_member(user.id)
     if user is None:
         return False
     else:
-        return conf.ADMIN_ROLE in user.roles
+        return user.id in conf.ADMINS
 
 bot = commands.Bot(command_prefix="!",chunk_guilds_at_startup=True, intents=discord.Intents.all())
 
@@ -127,18 +125,16 @@ async def rmlfg(ctx):
 @bot.command()
 async def shutdown(ctx):
     if is_admin(ctx.message.author):
-        print(f"Shutdown denied for {ctx.message.author.name}:{ctx.message.author.id}")
-        await ctx.send("Access denied")
-    else:
         print(f"Shutdown by {ctx.message.author.name}")
         await bot.close()
+    else:
+        print(f"Shutdown denied for {ctx.message.author.name}:{ctx.message.author.id}")
+        await ctx.send("Access denied")
 
 
 @bot.command()
 async def push(ctx):
     if is_admin(ctx.message.author):
-        await ctx.send("Access denied")
-    else:
         channel = bot.get_channel(conf.SCHEDULING_CHAN)
         async with aiohttp.ClientSession() as session:
             async with session.get(
@@ -148,6 +144,8 @@ async def push(ctx):
         output = parse(data)
         for line in output:
             await channel.send(line)
+    else:
+        await ctx.send("Access denied")
     print("Push")
 
 
