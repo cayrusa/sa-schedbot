@@ -308,7 +308,7 @@ async def info(ctx, player="ID"):
     elif player == "time":
         #print("Info for " + ctx.message.author.name)
         player = "time&ID&{}".format(ctx.message.author.id)
-    else:
+    #else:
        # print("Checking data for player " + player)
     player = player.replace(" ", "_")
     async with aiohttp.ClientSession() as session:
@@ -365,7 +365,7 @@ async def statistics(ctx, player="ID"):
     if player == "ID":
         #print("Racial Stats for " + ctx.message.author.name)
         player = "ID&{}".format(ctx.message.author.id)
-    else:
+    #else:
         #print("Checking Racial stats for player " + player)
     player = player.replace(" ", "_")
     async with aiohttp.ClientSession() as session:
