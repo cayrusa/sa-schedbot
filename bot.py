@@ -84,7 +84,7 @@ async def on_ready():
 @bot.event
 async def on_member_join(member):
     message = member.name + " has **joined** the server"
-    print(message)
+    #print(message)
     channel = bot.get_channel(conf.JOINS_LEAVES_CHAN)
     await channel.send(message)
     await member.send(conf.WELCOME_MSG)
@@ -93,7 +93,7 @@ async def on_member_join(member):
 @bot.event
 async def on_member_remove(member):
     message = member.name + " has **left** the server"
-    print(message)
+    #print(message)
     channel = bot.get_channel(conf.JOINS_LEAVES_CHAN)
     await channel.send(message)
 
@@ -126,7 +126,7 @@ async def lfg(ctx):
         return
     role = serv.get_role(conf.LFG_ROLE)
     await member.add_roles(role)
-    print(f"add lfg for {ctx.message.author.name}")
+    #print(f"add lfg for {ctx.message.author.name}")
 
 
 @bot.command()
@@ -139,7 +139,7 @@ async def rmlfg(ctx):
         return
     role = serv.get_role(conf.LFG_ROLE)
     await member.remove_roles(role)
-    print(f"remove lfg for {ctx.message.author.name}")
+    #print(f"remove lfg for {ctx.message.author.name}")
 
 
 @bot.command()
@@ -155,6 +155,7 @@ async def shutdown(ctx):
 @bot.command()
 async def push(ctx):
     if is_admin(ctx.message.author):
+        print(f"Push by {ctx.message.author.name}")
         channel = bot.get_channel(conf.SCHEDULING_CHAN)
         async with aiohttp.ClientSession() as session:
             async with session.get(
@@ -165,8 +166,8 @@ async def push(ctx):
         for line in output:
             await channel.send(line)
     else:
+        print(f"Push denied for {ctx.message.author.name}:{ctx.message.author.id}")
         await ctx.send("Access denied")
-    print("Push")
 
 
 @bot.command()
@@ -183,12 +184,12 @@ async def schedule(ctx):
     test = str(data)
     refine = test.lstrip("b'").rstrip("'")
     await user.send(refine)
-    print("Schedule for " + ctx.message.author.name)
+    #print("Schedule for " + ctx.message.author.name)
 
 
 @bot.command()
 async def commands(ctx):
-    print(f"Commands for {ctx.message.author.name}")
+    #print(f"Commands for {ctx.message.author.name}")
     user = ctx.message.author
     await user.send(
         "__**Schedbot commands:**__ \n \n***!info Playername***\nGet a summary of all your games, and whether they have been scheduled.\n> Playername is your name as written in the Player List sheet of the Game Manager.\n>If no Playername is given, the bot will send you your own info."
@@ -212,7 +213,7 @@ async def commands(ctx):
 
 @bot.command()
 async def update(ctx, game, choice="none", comment="none"):
-    print("Update by " + ctx.message.author.name)
+    #print("Update by " + ctx.message.author.name)
     global lockout
     availchoice = ["yes", "no", "maybe", "none"]
     if choice not in availchoice:
@@ -261,7 +262,7 @@ async def update(ctx, game, choice="none", comment="none"):
 
 @bot.command()
 async def status(ctx, game, content="no"):
-    print("Status for " + ctx.message.author.name)
+    #print("Status for " + ctx.message.author.name)
     user = ctx.message.author
     async with aiohttp.ClientSession() as session:
         async with session.get(
@@ -277,7 +278,7 @@ async def status(ctx, game, content="no"):
 
 @bot.command()
 async def time(ctx, game=None):
-    print("Time for " + ctx.message.author.name)
+    #print("Time for " + ctx.message.author.name)
     if game == None:
         test = ctx.message.timestamp
         offset = timedelta(hours=1)
@@ -302,13 +303,13 @@ async def time(ctx, game=None):
 async def info(ctx, player="ID"):
     user = ctx.message.author
     if player == "ID":
-        print("Info for " + ctx.message.author.name)
+        #print("Info for " + ctx.message.author.name)
         player = "ID&{}".format(ctx.message.author.id)
     elif player == "time":
-        print("Info for " + ctx.message.author.name)
+        #print("Info for " + ctx.message.author.name)
         player = "time&ID&{}".format(ctx.message.author.id)
     else:
-        print("Checking data for player " + player)
+       # print("Checking data for player " + player)
     player = player.replace(" ", "_")
     async with aiohttp.ClientSession() as session:
         async with session.get(
@@ -324,7 +325,7 @@ async def info(ctx, player="ID"):
 
 @bot.command()
 async def match(ctx, player1="gm", player2=""):
-    print("Querry continuations by {}".format(ctx.message.author.name))
+    #print("Querry continuations by {}".format(ctx.message.author.name))
     if player1 == "lfg":
         lfg = ["PlayerID"]
         if ctx.message.guild is not None: #TODO: if ask from private message does not work.
@@ -362,10 +363,10 @@ async def match(ctx, player1="gm", player2=""):
 async def statistics(ctx, player="ID"):
     user = ctx.message.author
     if player == "ID":
-        print("Racial Stats for " + ctx.message.author.name)
+        #print("Racial Stats for " + ctx.message.author.name)
         player = "ID&{}".format(ctx.message.author.id)
     else:
-        print("Checking Racial stats for player " + player)
+        #print("Checking Racial stats for player " + player)
     player = player.replace(" ", "_")
     async with aiohttp.ClientSession() as session:
         async with session.get(
